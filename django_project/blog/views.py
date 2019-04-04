@@ -5,13 +5,31 @@ from django.contrib.auth.models import User
 from django.views.generic import ListView,DetailView,CreateView,UpdateView,DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin,UserPassesTestMixin
 import urllib.request, json 
+from django.core.cache import cache
 filled=0
+
 # Create your views here.
 def home(request):
+    
     context={
         'posts':Post.objects.all()
     }
     return render(request,'blog/home.html',context)
+
+def home2(request):
+    #Cached alternative, reduces 
+    results = cache.get('key')
+    if results is None:
+        print('first refresh')
+        cache.set('key', Post.objects.all().select_related())
+        results = cache.get('key')
+    else:
+        print('hit')
+    context={
+        'posts':results
+    }
+    return render(request,'blog/home2.html',context)
+
 def fill_data_once():
     # url = 'https://raw.githubusercontent.com/CoreyMSchafer/code_snippets/master/Django_Blog/snippets/posts.json'
     with urllib.request.urlopen("https://raw.githubusercontent.com/CoreyMSchafer/code_snippets/master/Django_Blog/snippets/posts.json") as url:
@@ -21,7 +39,13 @@ def fill_data_once():
             post.save()
 # fill_data_once()
 class PostListView(ListView):
-    model = Post
+    results = cache.get('key')
+    if results is None:
+        print('first refresh')
+        cache.set('key', Post.objects.all().select_related())
+        results = cache.get('key')
+    # results = Post.objects.all()
+    queryset = results
     template_name='blog/home.html'
     context_object_name='posts'
     ordering = ['-date_posted']
@@ -64,7 +88,6 @@ class PostUpdateView(LoginRequiredMixin,UserPassesTestMixin,UpdateView):
         return False
 
 class PostDeleteView(LoginRequiredMixin,UserPassesTestMixin,DeleteView):
-
     model = Post
     success_url = '/'
     def test_func(self):

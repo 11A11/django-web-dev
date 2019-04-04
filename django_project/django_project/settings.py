@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'debug_toolbar',
 ]
 
 MIDDLEWARE = [
@@ -50,6 +51,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'django_project.urls'
@@ -137,3 +139,18 @@ EMAIL_USE_TLS = True
 # better to use environment variables
 EMAIL_HOST_USER = 'YOUR USER'
 EMAIL_HOST_PASSWORD = 'YOUR PASSWORD'
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': '127.0.0.1:11211',
+        'TIMEOUT' : 60,
+    }
+}
+
+INTERNAL_IPS = {
+    '127.0.0.1'
+}
+ALLOWED_HOSTS={
+    '192.168.0.70','127.0.0.1'
+}
