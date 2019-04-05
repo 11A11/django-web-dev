@@ -11,8 +11,18 @@ filled=0
 # Create your views here.
 def home(request):
     
+    # context={
+    #     'posts':Post.objects.all()
+    # }
+    results = cache.get('key')
+    if results is None:
+        print('first refresh')
+        cache.set('key', Post.objects.all())
+        results = cache.get('key')
+    else:
+        print('hit')
     context={
-        'posts':Post.objects.all()
+        'posts':results
     }
     return render(request,'blog/home.html',context)
 
@@ -64,7 +74,16 @@ class UserPostListView(ListView):
 
 
 class PostDetailView(DetailView):
-    model = Post
+
+    # model = Post   #uncomment for normal op
+    results = cache.get('key')
+    if results is None:
+        print('first refresh')
+        cache.set('key', Post.objects.all().select_related())
+        results = cache.get('key')
+    # results = Post.objects.all()
+    queryset = results
+    template_name='blog/post_detail2.html'
     
 class PostCreateView(LoginRequiredMixin,CreateView):
     model = Post
