@@ -141,16 +141,20 @@ EMAIL_HOST_USER = 'YOUR USER'
 EMAIL_HOST_PASSWORD = 'YOUR PASSWORD'
 
 CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': '127.0.0.1:11211',
-        'TIMEOUT' : 120,
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient"
+        },
+        "KEY_PREFIX": "example"
     }
 }
+CACHE_TTL = 60*2
 
 INTERNAL_IPS = {
     '127.0.0.1'
 }
 ALLOWED_HOSTS={
-    '192.168.0.70','127.0.0.1'
+    '192.168.0.70','127.0.0.1','localhost'
 }
