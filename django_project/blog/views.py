@@ -11,19 +11,19 @@ filled=0
 # Create your views here.
 def home(request):
     
-    # context={
-    #     'posts':Post.objects.all()
-    # }
-    results = cache.get('key')
-    if results is None:
-        print('first refresh')
-        cache.set('key', Post.objects.all())
-        results = cache.get('key')
-    else:
-        print('hit')
     context={
-        'posts':results
+        'posts':Post.objects.all()
     }
+    # results = cache.get('key')
+    # if results is None:
+    #     print('first refresh')
+    #     cache.set('key', Post.objects.all())
+    #     results = cache.get('key')
+    # else:
+    #     print('hit')
+    # context={
+    #     'posts':results
+    # }
     return render(request,'blog/home.html',context)
 
 def home2(request):
@@ -31,8 +31,8 @@ def home2(request):
     results = cache.get('key')
     if results is None:
         print('first refresh')
-        cache.set('key', Post.objects.all().select_related())
-        results = cache.get('key')
+        results=Post.objects.all().select_related()
+        cache.set('key', results)
     else:
         print('hit')
     context={
@@ -49,13 +49,15 @@ def fill_data_once():
             post.save()
 # fill_data_once()
 class PostListView(ListView):
-    results = cache.get('key')
-    if results is None:
-        print('first refresh')
-        cache.set('key', Post.objects.all().select_related())
-        results = cache.get('key')
     # results = Post.objects.all()
-    queryset = results
+    # queryset = results
+    def get_queryset(self):
+        results = cache.get('key')
+        if results is None:
+            print('first refresh')
+            results=Post.objects.all().select_related()
+            cache.set('key', results)
+        return results
     template_name='blog/home.html'
     context_object_name='posts'
     ordering = ['-date_posted']
@@ -76,13 +78,15 @@ class UserPostListView(ListView):
 class PostDetailView(DetailView):
 
     # model = Post   #uncomment for normal op
-    results = cache.get('key')
-    if results is None:
-        print('first refresh')
-        cache.set('key', Post.objects.all().select_related())
-        results = cache.get('key')
+    
     # results = Post.objects.all()
-    queryset = results
+    def get_queryset(self):
+        results = cache.get('key')
+        if results is None:
+            print('first refresh')
+            cache.set('key', Post.objects.all().select_related())
+            results = cache.get('key')
+        return results
     template_name='blog/post_detail2.html'
     
 class PostCreateView(LoginRequiredMixin,CreateView):

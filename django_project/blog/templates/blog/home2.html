@@ -4,10 +4,10 @@
     <article class="media content-section">
         <div class="media-body">
             <div class="article-metadata">
-                <a class="mr-2">{{ post.author }}</a>
-                <small class="text-muted">{{ post.date_posted}}</small>
+                <a class="mr-2" href="{% url 'user-post' post.author.username %}">{{ post.author }}</a>
+                <small class="text-muted">{{ post.date_posted|date:"d F, Y" }}</small>
             </div>
-            <h2><a class="article-title" >{{ post.title }}</a></h2>
+            <h2><a class="article-title" href="{% url 'post-detail' post.id %}">{{ post.title }}</a></h2>
             <p class="article-content">{{ post.content }}</p>
         </div>
     </article>
