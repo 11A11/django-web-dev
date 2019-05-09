@@ -9,6 +9,7 @@ from django.core.cache import cache
 from django.core.cache.backends.base import DEFAULT_TIMEOUT
 from django.views.decorators.cache import cache_page
 from django.conf import settings
+import time
 
 CACHE_TTL = getattr(settings, 'CACHE_TTL', DEFAULT_TIMEOUT)
 
@@ -24,6 +25,9 @@ class CacheMixin(object): #from https://gist.github.com/cyberdelia/1231560
 
 
 # Create your views here.
+def long_run(request):
+    time.sleep(10)
+    return HttpResponse("hello")
 
 @cache_page(CACHE_TTL)
 def home(request):

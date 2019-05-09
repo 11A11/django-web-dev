@@ -2,6 +2,33 @@ from django.shortcuts import render,redirect
 from django.contrib import messages
 from .forms import UserRegisterForm,UserUpdateForm,ProfileUpdateForm
 from django.contrib .auth.decorators import login_required
+from django.contrib.auth.models import User
+from django.contrib import messages
+from django.views.generic.edit import FormView
+from django.views.generic import TemplateView
+from django.views.generic.list import ListView
+from django.shortcuts import redirect
+
+from .forms import GenerateRandomUserForm
+from .tasks import create_random_user_accounts
+from .models import RandUser
+
+class UsersListView(ListView):
+    template_name = 'users/users_list.html'
+    model = RandUser
+    queryset = RandUser.objects.all()
+
+class GenerateRandomUserView(FormView):
+    template_name = 'users/generate_random_users.html'
+    form_class = GenerateRandomUserForm
+    queryset = User.objects.using('customers').all()
+
+    def form_valid(self, form):
+        total = form.cleaned_data.get('total')
+        create_random_user_accounts.delay(total)
+        messages.success(self.request, 'We are generating your random users! Wait a moment and refresh this page.')
+        return redirect('users_list')
+
 def register(request):
     if request.method == 'POST':
         form = UserRegisterForm(request.POST)

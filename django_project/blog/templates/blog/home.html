@@ -1,5 +1,6 @@
 {% extends "blog/base.html" %}
 {% block content %}
+<h1 id="demo">Content here</h1>
     {% for post in posts %}
     <article class="media content-section">
         <img class="rounded-circle article-image" src="{{ post.author.profile.image.url }}">
@@ -32,4 +33,18 @@
         {% endif%}
 
     {% endif %}
+<script>
+    function loadDoc() {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+     document.getElementById("demo").innerHTML = this.responseText;
+     console.log(responseText);
+    }
+  };
+  xhttp.open("GET", "/long", true);
+  xhttp.send();
+}
+loadDoc();
+</script>
 {% endblock content %}

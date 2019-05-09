@@ -82,6 +82,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    },
+    'customers':{
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'customersdb.sqlite3'),
     }
 }
 
@@ -156,5 +160,7 @@ INTERNAL_IPS = {
     '127.0.0.1'
 }
 ALLOWED_HOSTS={
-    '192.168.0.70','127.0.0.1','localhost'
+    '192.168.1.24','127.0.0.1','localhost'
 }
+
+CELERY_BROKER_URL = 'amqp://localhost'
